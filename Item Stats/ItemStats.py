@@ -1,6 +1,9 @@
 # Import Statements
+import urllib.request
+
 import requests
 from bs4 import BeautifulSoup
+from urllib import request
 
 
 # Function to find a website and return its parsed data
@@ -19,7 +22,7 @@ def find_infoboxes(parsed_data):
     itembox = parsed_data.find(class_="portable-infobox pi-background pi-border-color pi-theme-wikia pi-layout-stacked")
     # Finds the box that has all the stats we are looking for
     seperated_boxes = itembox.find_all(class_="pi-item pi-group pi-border-color")
-    return seperated_boxes[1], seperated_boxes[2], seperated_boxes[5]
+    return seperated_boxes[0], seperated_boxes[1], seperated_boxes[2], seperated_boxes[5]
 
 
 # finds the infobox that has the stats we are looking for and returns it
@@ -71,8 +74,15 @@ def find_and_list_passives(infobox):
 
 # Finds the website, parses it, and finds the appropriate boxes of info
 parsed = find_and_parse()
-statbox, abilitybox, costbox = find_infoboxes(parsed)
+picbox, statbox, abilitybox, costbox = find_infoboxes(parsed)
 
+cost_info = costbox.find("tbody")
+total_cost = cost_info.find(style="white-space:normal").text
+print(total_cost)
+
+
+picture = picbox.find("img", alt="Immortal Shieldbow")
+urllib.request.urlretrieve(picture["src"], "C:\\Users\\Jacob Bode\\PycharmProjects\\LoLWikiWebscraping\\test.jpg")
 
 # Finds the stats and puts it into a list
 stat_info = find_stats()
