@@ -82,7 +82,7 @@ print(total_cost)
 
 
 picture = picbox.find("img", alt="Immortal Shieldbow")
-urllib.request.urlretrieve(picture["src"], "C:\\Users\\Jacob Bode\\PycharmProjects\\LoLWikiWebscraping\\test.jpg")
+urllib.request.urlretrieve(picture["src"], "/test.jpg")
 
 # Finds the stats and puts it into a list
 stat_info = find_stats()

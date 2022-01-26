@@ -35,7 +35,12 @@ def find_stats(stats):
         # Gives that stat a variable
         iterated_stat = stat_lst[i]
         # If its a growth stat
-        if "Growth" in iterated_stat:
+        if "Resource" in iterated_stat and "N/A" in stats.find_all("div", class_="pi-smart-data-value")[1].text:
+            pass
+        elif ("ResourceRegen" == iterated_stat or ("Resource" in iterated_stat and "Resource" in iterated_stat)) and \
+                "Energy" in stats.find_all("div", class_="pi-smart-data-value")[1].find_all("a")[1].text:
+            pass
+        elif "Growth" in iterated_stat:
             # Gets rid of the word growth
             iterated_stat = iterated_stat[:-6]
             # Takes it by lvl, and gets rid of the "+" at the beginning
@@ -53,16 +58,30 @@ def check_name(name):
     # Kog'Maw is an exception for some reason, and has to specified (No clue why)
     if name == "Kog'Maw":
         return "KogMaw"
+    # Same as Kog'Maw
+    if name == "Rek'Sai":
+        return "RekSai"
+    # The IV in jarvan is both capitalized, which I cannot fix automatically
+    if name == "Jarvan IV":
+        return "JarvanIV"
+    # Kled's two forms mess with the variable names on the site
+    if name == "Kled":
+        return "Kled1"
+    # The wiki decided it would be funnier to name wukong "MonkeyKing" instead
+    if name == "Wukong":
+        return "MonkeyKing"
     # Creates an empty string
     temp_name = ""
     # For each letter in the name
     for i in range(0, len(name)):
         # If it is the first letter, not an apostrophe or a space
-        if name[i] != "'" and i == 0 and name[i] != " ":
+        if name[i] == "&":
+            return temp_name
+        elif name[i] != "'" and i == 0 and name[i] != " ":
             # Adds it capitalized
             temp_name += name[i].upper()
         # If it is not a space or apostrophe
-        elif name[i] != "'" and name[i] != " ":
+        elif name[i] != "'" and name[i] != " " and name[i] != ".":
             # If the last letter was a space
             if name[i - 1] == " ":
                 # Adds it capitalized
@@ -83,7 +102,7 @@ def find_all_stats(stats):
 
 
 # Prompts for a champion, finds their corresponding wiki page, and fixes the name if needed
-def find_website():
+def find_website_prompted():
     global champion
     champion = input(
         "What champion would you like to find the stats for? (Note that capitalization and any apostrophes "
@@ -94,10 +113,21 @@ def find_website():
     return website
 
 
-# Prints out each stat name and the associated value
-def print_stats(stats):
+def find_website(champ):
+    global champion
+    champion = champ
+    url = "https://leagueoflegends.fandom.com/wiki/" + champion + "/LoL"
+    website = requests.get(url)
+    champion = check_name(champion)
+    return website
+
+
+def return_stats(champ):
+    combined_stats = find_all_stats(find_stat_info(find_website(champ)))
+    champ_stat_lst = []
     for i in range(0, len(combined_stats)):
-        print(combined_stat_lst[i] + " " + stats[i])
+        champ_stat_lst.append(combined_stat_lst[i] + " " + combined_stats[i])
+    return champ_stat_lst
 
 
 # Finds the exact stat container we are looking for and returns it
@@ -116,7 +146,3 @@ stat_lst = ["Health", "HealthGrowth", "ResourceBar", "ResourceBarGrowth", "Healt
 # Attack speed stats
 attack_stat_lst = ["Base AS", "Attack Windup", "AS Ratio", "Bonus AS"]
 combined_stat_lst = stat_lst + attack_stat_lst
-# Does all the searching
-combined_stats = find_all_stats(find_stat_info(find_website()))
-# Then prints the stats
-print_stats(combined_stats)
