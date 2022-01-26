@@ -36,10 +36,17 @@ def find_stats(stats):
         iterated_stat = stat_lst[i]
         # If its a growth stat
         if "Resource" in iterated_stat and "N/A" in stats.find_all("div", class_="pi-smart-data-value")[1].text:
-            pass
-        elif ("ResourceRegen" == iterated_stat or ("Resource" in iterated_stat and "Resource" in iterated_stat)) and \
-                "Energy" in stats.find_all("div", class_="pi-smart-data-value")[1].find_all("a")[1].text:
-            pass
+            champion_stat_lst.append("N/A")
+        elif "Resource" in iterated_stat and "Energy" in \
+                stats.find_all("div", class_="pi-smart-data-value")[1].find_all("a")[1].text:
+            if iterated_stat == "ResourceBar" and champion == "Shen":
+                champion_stat_lst.append("400")
+            elif iterated_stat == "ResourceBar":
+                champion_stat_lst.append("200")
+            elif iterated_stat == "ResourceBarGrowth" or iterated_stat == "ResourceRegenGrowth":
+                champion_stat_lst.append("0")
+            elif iterated_stat == "ResourceRegen":
+                champion_stat_lst.append("50")
         elif "Growth" in iterated_stat:
             # Gets rid of the word growth
             iterated_stat = iterated_stat[:-6]
